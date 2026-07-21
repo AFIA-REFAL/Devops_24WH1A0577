@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="registration-container">
+        
+        <h1>Event Registration Form</h1>
+
+        <form id="form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="event">Event:</label>
+            <input type="text" id="event" required>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="response-section">
+            <h3>Response:</h3>
+            <p id="result"></p>
+        </div>
+        
+    </div>
+
+    <script>
+    document.getElementById("form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const data = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            event: document.getElementById("event").value
+        };
+
+        try {
+            const res = await fetch("http://localhost:5000/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            document.getElementById("result").innerText = result.message;
+        } catch (error) {
+            document.getElementById("result").innerText = "Error connecting to server.";
+            console.error("Fetch error:", error);
+        }
+    });
+    </script>
+
+</body>
+</html>
+
+style.css
+/* Global Reset and Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #9face6);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Wrapper alignment */
+.registration-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+}
+
+/* Form container */
+form {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Heading */
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Labels and Input fields */
+label {
+    font-weight: bold;
+    color: #555;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #74ebd5;
+    outline: none;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+/* Response text area */
+.response-section {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+#result {
+    font-weight: bold;
+    margin-top: 5px;
+    color: #1b5e20; /* Subtle green for success messages */
+}
+package.json
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.0.0"
+  }
+}
+server.js
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// In-memory Database (Clears whenever the server restarts)
+let registrations = [];
+
+// 1. Base Route - To check if the server is alive
+app.get("/", (req, res) => {
+    res.send("Event Registration Service Running");
+});
+
+// 2. Register POST Route - Handles form submissions
+app.post("/register", (req, res) => {
+    const { name, email, event } = req.body;
+
+    // Validation check
+    if (!name || !email || !event) {
+        return res.status(400).json({
+            message: "All fields required"
+        });
+    }
+
+    // Create new user object
+    const user = {
+        id: registrations.length + 1,
+        name,
+        email,
+        event
+    };
+
+    // Save to our temporary array
+    registrations.push(user);
+
+    // 🌟 VISIBILITY FIX: This prints incoming data straight to your terminal log
+    
+    // Send successful response back to frontend
+    res.status(201).json({
+        message: "Registration successful",
+        user
+    });
+});
+
+// 3. Admin View Route - Visit http://localhost:5000/users in your browser to see all entries
+app.get("/users", (req, res) => {
+    res.json(registrations);
+});
+
+// Start Server Configuration
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server successfully running on port ${PORT}`);
+    console.log(`👉 View registered users anytime at http://localhost:${PORT}/users`);
+});
+
+
