@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">Simple full-stack demo</p>
+      <h1>Registration Form</h1>
+      <p class="lede">Create an account with live validation and send the form to a Node.js + Express backend.</p>
+    </section>
+
+    <section class="card">
+      <form id="registrationForm" novalidate>
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" autocomplete="name" />
+          <small class="error" id="fullNameError"></small>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" />
+          <small class="error" id="emailError"></small>
+        </div>
+
+        <div class="field">
+          <label for="phoneNumber">Phone Number</label>
+          <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number" autocomplete="tel" />
+          <small class="error" id="phoneNumberError"></small>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a password" autocomplete="new-password" />
+          <small class="error" id="passwordError"></small>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" autocomplete="new-password" />
+          <small class="error" id="confirmPasswordError"></small>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Registration</button>
+        <p class="status" id="statusMessage" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
